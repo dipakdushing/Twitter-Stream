@@ -15,7 +15,6 @@ app.get("/", (req,res) => {
  res.sendFile(path.resolve(__dirname, "../","client","index.html"))
 })
 
-//console.log(token);
 const rulesURL = "https://api.twitter.com/2/tweets/search/stream/rules";
 const streamURL = "https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id";
 
@@ -53,14 +52,14 @@ async function setRules(){
 async function deleteRules(rules){
 
     if(!Array.isArray(rules.data)){
-        return null
+        return null;
     }
 
     const ids = rules.data.map((rule)=> rule.id) 
 
     const data = {
         delete : {
-            ids : ids
+            ids : ids,
         }
     }
     
@@ -85,7 +84,6 @@ function streamTweets(socket){
     stream.on('data', (data)=> {
         try {
             const json = JSON.parse(data);
-            //console.log(json);
             socket.emit('tweet' , json)
         } catch (error) {
             
@@ -111,21 +109,5 @@ io.on('connection', async()=> {
     streamTweets(io)
 })
 
-
-// (async ()=> {
-//     let currentRules
-//     try{
-       
-//         currentRules=await getRules();
-//         await deleteRules(currentRules);
-
-//         await setRules();
-
-//     }catch(err){
-//        console.error(err);
-//        process.exit(1);
-//     }
-//     streamTweets()
-// })()
 
 server.listen(PORT ,()=> console.log(`Listening on port ${PORT}`))
